@@ -68,7 +68,8 @@ def test_rotate_centre(image_differ: LiveImageDiffer):
     actual = svgwrite.Drawing(size=(200, 200))
 
     t1 = Tan((100, 0), (0, 100))
-    t1.rotate(90, 100, 0)
+    t1.anchor_point = (100, 0)
+    t1.rotate(90)
     t1.draw(actual)
 
     svg1 = LiveSvg(actual.tostring())
@@ -167,3 +168,21 @@ class LiveSvg(LiveImage):
         if 'A' not in image.getbands():
             image.putalpha(120)
         return painter
+
+
+# noinspection DuplicatedCode
+def test_fill(image_differ: LiveImageDiffer):
+    expected = svgwrite.Drawing(size=(200, 200))
+    expected.add(expected.polygon([(100, 100), (200, 100), (100, 0)],
+                                  fill='blue',
+                                  stroke='blue'))
+
+    actual = svgwrite.Drawing(size=(200, 200))
+
+    t1 = Tan((100, 0), (0, 100))
+    t1.fill = 'blue'
+    t1.draw(actual)
+
+    svg1 = LiveSvg(actual.tostring())
+    svg2 = LiveSvg(expected.tostring())
+    image_differ.assert_equal(svg1, svg2)

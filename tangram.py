@@ -69,3 +69,7 @@ class Tangram:
     def draw(self, drawing):
         for tan in self.visible_tans:
             tan.draw(drawing)
+
+    def translate(self, dx, dy):
+        for tan in self.all_tans:
+            tan.translate(dx, dy)

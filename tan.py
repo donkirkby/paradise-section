@@ -14,30 +14,32 @@ class Tan:
             self.display = None
         if display is not None:
             self.display = display
+        self.anchor_point = (0, 0)
+        self.fill = 'black'
 
     def draw(self, drawing):
         if self.display is not None:
+            self.display.fill = self.fill
             self.display.draw(drawing)
         else:
             x0 = drawing['width']//2
             y0 = drawing['height']//2
             flipped_points = [(x0+x, y0-y) for x, y in self.points]
             drawing.add(drawing.polygon(flipped_points,
-                                        fill='black',
-                                        stroke='black'))
+                                        fill=self.fill,
+                                        stroke=self.fill))
 
     def translate(self, dx, dy):
         self.points = tuple((x+dx, y+dy) for x, y in self.points)
         if self.display:
             self.display.translate(dx, dy)
 
-    def rotate(self, angle, cx=0, cy=0):
+    def rotate(self, angle):
         """ Rotate the tan through an angle, centred on (cx, cy).
 
         :param angle: in degrees, not radians
-        :param cx: the x coordinate of the centre of rotation
-        :param cy: the y coordinate of the centre of rotation
         """
+        cx, cy = self.anchor_point
         theta = angle*math.pi / 180
         ct = math.cos(theta)
         st = math.sin(theta)
@@ -45,7 +47,8 @@ class Tan:
         rotated_points = ((x*ct-y*st, x*st+y*ct) for x, y in relative_points)
         self.points = tuple((x+cx, y+cy) for x, y in rotated_points)
         if self.display:
-            self.display.rotate(angle, cx, cy)
+            self.display.anchor_point = self.anchor_point
+            self.display.rotate(angle)
 
     def scale(self, scale):
         self.points = tuple((scale*x, scale*y) for x, y in self.points)
@@ -56,3 +59,9 @@ class Tan:
         self.points = tuple((x, -y) for x, y in self.points)
         if self.display:
             self.display.flip()
+
+    def anchor(self, target: 'Tan', target_point=0, moving_point=0):
+        new_x, new_y = target.points[target_point]
+        old_x, old_y = self.points[moving_point]
+        self.translate(new_x - old_x, new_y - old_y)
+        self.anchor_point = new_x, new_y

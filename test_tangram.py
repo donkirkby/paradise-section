@@ -1,4 +1,3 @@
-import pytest
 import svgwrite
 from space_tracer import LiveImageDiffer
 
@@ -234,34 +233,67 @@ def test_draw_parallelogram_gap(image_differ: LiveImageDiffer):
     image_differ.assert_equal(svg1, svg2)
 
 
-@pytest.mark.skip
-def test_draw_solution(image_differ: LiveImageDiffer):
+# noinspection DuplicatedCode
+def test_anchor(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
-    expected.add(expected.polygon([(0, 0), (200, 0), (200, 200), (0, 200)],
-                                  fill='black',
-                                  stroke='black'))
+    tangram1 = Tangram(scale=100)
+    tangram1.add(tangram1.t1a)
+    tangram1.add(tangram1.t2)
+    tangram1.t1a.translate(-25*tangram1.ROOT2, 50)
+    tangram1.draw(expected)
 
     actual = svgwrite.Drawing(size=(200, 200))
+    tangram2 = Tangram(scale=100)
+    tangram2.add(tangram2.t1a)
+    tangram2.add(tangram2.t2)
+    tangram2.t1a.anchor(tangram2.t2, target_point=2, moving_point=1)
+    tangram2.draw(actual)
 
-    tangram = Tangram(scale=200, gap=4)
-    tangram.add(tangram.t4a)
-    tangram.t4a.rotate(45)
-    tangram.add(tangram.t4b)
-    tangram.t4b.rotate(-45)
-    tangram.add(tangram.p)
-    tangram.p.flip()
-    tangram.p.rotate(-45)
-    tangram.p.translate(50, -50)
+    svg1 = LiveSvg(actual.tostring())
+    svg2 = LiveSvg(expected.tostring())
+    image_differ.assert_equal(svg1, svg2)
+
+
+# noinspection DuplicatedCode
+def test_anchor_and_rotate(image_differ: LiveImageDiffer):
+    expected = svgwrite.Drawing(size=(200, 200))
+    tangram1 = Tangram(scale=100)
+    tangram1.add(tangram1.t1a)
+    tangram1.t1a.rotate(90)
+    tangram1.add(tangram1.t2)
+    tangram1.t1a.translate(0, 50-25*tangram1.ROOT2)
+    tangram1.draw(expected)
+
+    actual = svgwrite.Drawing(size=(200, 200))
+    tangram = Tangram(scale=100)
     tangram.add(tangram.t1a)
-    tangram.t1a.rotate(-135)
-    tangram.add(tangram.t1b)
-    tangram.t1b.rotate(135)
-    tangram.t1b.translate(-50, 50)
-    tangram.add(tangram.s)
-    tangram.s.rotate(135)
     tangram.add(tangram.t2)
-    tangram.t2.translate(-100, -100)
+    tangram.t1a.anchor(tangram.t2, target_point=2, moving_point=1)
+    tangram.t1a.rotate(90)
     tangram.draw(actual)
+
+    svg1 = LiveSvg(actual.tostring())
+    svg2 = LiveSvg(expected.tostring())
+    image_differ.assert_equal(svg1, svg2)
+
+
+# noinspection DuplicatedCode
+def test_translate(image_differ: LiveImageDiffer):
+    expected = svgwrite.Drawing(size=(200, 200))
+    tangram1 = Tangram(scale=100)
+    tangram1.add(tangram1.t1a)
+    tangram1.add(tangram1.t2)
+    tangram1.t1a.translate(-25*tangram1.ROOT2-50, 50)
+    tangram1.t2.translate(-50, 0)
+    tangram1.draw(expected)
+
+    actual = svgwrite.Drawing(size=(200, 200))
+    tangram2 = Tangram(scale=100)
+    tangram2.add(tangram2.t1a)
+    tangram2.add(tangram2.t2)
+    tangram2.t1a.anchor(tangram2.t2, target_point=2, moving_point=1)
+    tangram2.translate(-50, 0)
+    tangram2.draw(actual)
 
     svg1 = LiveSvg(actual.tostring())
     svg2 = LiveSvg(expected.tostring())
