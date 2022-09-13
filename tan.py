@@ -1,4 +1,5 @@
 import math
+import typing
 
 
 class Tan:
@@ -34,12 +35,15 @@ class Tan:
         if self.display:
             self.display.translate(dx, dy)
 
-    def rotate(self, angle):
+    def rotate(self, angle, anchor_point: typing.Tuple[float, float] = None):
         """ Rotate the tan through an angle, centred on (cx, cy).
 
         :param angle: in degrees, not radians
+        :param anchor_point: centre of rotation, defaults to self.anchor_point
         """
-        cx, cy = self.anchor_point
+        if anchor_point is None:
+            anchor_point = self.anchor_point
+        cx, cy = anchor_point
         theta = angle*math.pi / 180
         ct = math.cos(theta)
         st = math.sin(theta)
@@ -47,8 +51,7 @@ class Tan:
         rotated_points = ((x*ct-y*st, x*st+y*ct) for x, y in relative_points)
         self.points = tuple((x+cx, y+cy) for x, y in rotated_points)
         if self.display:
-            self.display.anchor_point = self.anchor_point
-            self.display.rotate(angle)
+            self.display.rotate(angle, anchor_point)
 
     def scale(self, scale):
         self.points = tuple((scale*x, scale*y) for x, y in self.points)

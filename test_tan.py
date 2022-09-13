@@ -59,7 +59,7 @@ def test_rotate(image_differ: LiveImageDiffer):
     image_differ.assert_equal(svg1, svg2)
 
 
-def test_rotate_centre(image_differ: LiveImageDiffer):
+def test_rotate_anchor_point(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 200), (200, 200), (200, 100)],
                                   fill='black',
@@ -68,8 +68,7 @@ def test_rotate_centre(image_differ: LiveImageDiffer):
     actual = svgwrite.Drawing(size=(200, 200))
 
     t1 = Tan((100, 0), (0, 100))
-    t1.anchor_point = (100, 0)
-    t1.rotate(90)
+    t1.rotate(90, anchor_point=(100, 0))
     t1.draw(actual)
 
     svg1 = LiveSvg(actual.tostring())

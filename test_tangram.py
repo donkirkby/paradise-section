@@ -298,3 +298,29 @@ def test_translate(image_differ: LiveImageDiffer):
     svg1 = LiveSvg(actual.tostring())
     svg2 = LiveSvg(expected.tostring())
     image_differ.assert_equal(svg1, svg2)
+
+
+# noinspection DuplicatedCode
+def test_rotate(image_differ: LiveImageDiffer):
+    expected = svgwrite.Drawing(size=(200, 200))
+    tangram1 = Tangram(scale=100)
+    tangram1.add(tangram1.t1a)
+    tangram1.add(tangram1.t2)
+    tangram1.t1a.translate(-25*tangram1.ROOT2, 10)
+    tangram1.t2.translate(0, -40)
+    tangram1.t1a.rotate(90, anchor_point=(0, 10))
+    tangram1.t2.rotate(90, anchor_point=(0, 10))
+    tangram1.draw(expected)
+
+    actual = svgwrite.Drawing(size=(200, 200))
+    tangram2 = Tangram(scale=100)
+    tangram2.add(tangram2.t1a)
+    tangram2.add(tangram2.t2)
+    tangram2.t2.translate(0, -40)
+    tangram2.t1a.anchor(tangram2.t2, target_point=2, moving_point=1)
+    tangram2.rotate(90)
+    tangram2.draw(actual)
+
+    svg1 = LiveSvg(actual.tostring())
+    svg2 = LiveSvg(expected.tostring())
+    image_differ.assert_equal(svg1, svg2)

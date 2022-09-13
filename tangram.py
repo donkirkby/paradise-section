@@ -1,4 +1,5 @@
 import math
+import typing
 
 from tan import Tan
 
@@ -73,3 +74,34 @@ class Tangram:
     def translate(self, dx, dy):
         for tan in self.all_tans:
             tan.translate(dx, dy)
+
+    def rotate(self, angle, anchor_point: typing.Tuple[float, float] = None):
+        if anchor_point is None:
+            anchor_point = self.visible_tans[0].anchor_point
+        for tan in self.all_tans:
+            tan.rotate(angle, anchor_point)
+
+    @property
+    def width(self):
+        left, bottom, right, top = self.bounds
+        return right - left
+
+    @property
+    def height(self):
+        left, bottom, right, top = self.bounds
+        return top - bottom
+
+    @property
+    def bounds(self) -> typing.Tuple[float, float, float, float]:
+        """ Bounding box for all visible tans.
+
+        :return: (left, bottom, right, top)
+        """
+        points = [point
+                  for tan in self.visible_tans
+                  for point in tan.points]
+        left = min(x for x, y in points)
+        right = max(x for x, y in points)
+        top = max(y for x, y in points)
+        bottom = min(y for x, y in points)
+        return left, bottom, right, top
