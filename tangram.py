@@ -7,7 +7,7 @@ from tan import Tan
 class Tangram:
     ROOT2 = math.sqrt(2)
 
-    def __init__(self, scale=1, gap=0):
+    def __init__(self, scale: float = 1, gap: float = 0):
         root2 = self.ROOT2
         gap /= scale
         if gap == 0:
@@ -49,7 +49,7 @@ class Tangram:
         self.s = Tan((root2/4, 0), (root2/4, root2/4), (0, root2/4),
                      display=display)
 
-        self.visible_tans = []
+        self.visible_tans: typing.List[Tan] = []
         self.all_tans = [self.t1a,
                          self.t1b,
                          self.t2,
@@ -97,8 +97,9 @@ class Tangram:
 
         :return: (left, bottom, right, top)
         """
+        points_source = self.visible_tans or self.all_tans
         points = [point
-                  for tan in self.visible_tans
+                  for tan in points_source
                   for point in tan.points]
         left = min(x for x, y in points)
         right = max(x for x, y in points)

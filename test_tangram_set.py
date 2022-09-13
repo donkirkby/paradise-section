@@ -63,18 +63,17 @@ def test_align_bottoms(image_differ: LiveImageDiffer):
     tangrams[1].rotate(45)
 
     tangram_set = TangramSet(*tangrams)
-    bottom = tangram_set.align(top=50*Tangram.ROOT2, left=-300, right=100)
+    tangram_set.align(top=50*Tangram.ROOT2, left=-300, right=100)
 
     tangram_set.draw(actual)
 
     svg1 = LiveSvg(actual.tostring())
     svg2 = LiveSvg(expected.tostring())
     image_differ.assert_equal(svg1, svg2)
-    assert bottom == 0
 
 
 # noinspection DuplicatedCode
-def test_align(image_differ: LiveImageDiffer):
+def test_align_single(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(600, 300))
     tangram1 = create_simple_tangram()
     tangram1.translate(-100, 0)
@@ -85,11 +84,66 @@ def test_align(image_differ: LiveImageDiffer):
     tangrams = [create_simple_tangram()]
 
     tangram_set = TangramSet(*tangrams)
-    bottom = tangram_set.align(top=50, left=-300, right=100)
+    tangram_set.align(top=50, left=-300, right=100)
 
     tangram_set.draw(actual)
 
     svg1 = LiveSvg(actual.tostring())
     svg2 = LiveSvg(expected.tostring())
     image_differ.assert_equal(svg1, svg2)
-    assert bottom == 0
+
+
+# noinspection DuplicatedCode
+def test_align_spacer(image_differ: LiveImageDiffer):
+    expected = svgwrite.Drawing(size=(600, 300))
+    tangram1 = create_simple_tangram()
+    tangram1.translate(-250, 50 - 50*Tangram.ROOT2)
+    tangram2 = create_simple_tangram()
+    tangram2.translate(18.69, 50 - 50*Tangram.ROOT2)
+    tangram3 = create_simple_tangram()
+    tangram3.translate(150, 50 - 50*Tangram.ROOT2)
+
+    tangram1.draw(expected)
+    tangram2.draw(expected)
+    tangram3.draw(expected)
+
+    actual = svgwrite.Drawing(size=(600, 300))
+    tangrams = [create_simple_tangram(),
+                Tangram(scale=100),  # blank tangram for spacing
+                create_simple_tangram(),
+                create_simple_tangram()]
+
+    tangram_set = TangramSet(*tangrams)
+    tangram_set.align(top=50, left=-300, right=200)
+
+    tangram_set.draw(actual)
+
+    svg1 = LiveSvg(actual.tostring())
+    svg2 = LiveSvg(expected.tostring())
+    image_differ.assert_equal(svg1, svg2)
+
+
+# noinspection DuplicatedCode
+def test_scale(image_differ: LiveImageDiffer):
+    expected = svgwrite.Drawing(size=(600, 300))
+    tangram1 = create_simple_tangram()
+    tangram1.scale(2)
+    tangram1.translate(-200, 0)
+    tangram2 = create_simple_tangram()
+    tangram2.scale(2)
+
+    tangram1.draw(expected)
+    tangram2.draw(expected)
+
+    actual = svgwrite.Drawing(size=(600, 300))
+    tangrams = [create_simple_tangram(), create_simple_tangram()]
+
+    tangram_set = TangramSet(*tangrams)
+    tangram_set.align(top=50, left=-150, right=50)
+    tangram_set.scale(2)
+
+    tangram_set.draw(actual)
+
+    svg1 = LiveSvg(actual.tostring())
+    svg2 = LiveSvg(expected.tostring())
+    image_differ.assert_equal(svg1, svg2)

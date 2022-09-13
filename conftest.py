@@ -17,4 +17,5 @@ def session_image_differ():
 def image_differ(request, session_image_differ):
     """ Pass the current request to the session image differ. """
     session_image_differ.request = request
+    session_image_differ.tolerance = 5
     yield session_image_differ

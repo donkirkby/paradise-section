@@ -76,6 +76,7 @@ def test_draw_square_gap(image_differ: LiveImageDiffer):
     image_differ.assert_equal(svg1, svg2)
 
 
+# noinspection DuplicatedCode
 def test_draw_both_triangles(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 100), (200, 100), (100, 0)],
@@ -126,12 +127,7 @@ def test_draw_triangle_sizes(image_differ: LiveImageDiffer):
 
     svg1 = LiveSvg(actual.tostring())
     svg2 = LiveSvg(expected.tostring())
-    old_tolerance = image_differ.tolerance
-    image_differ.tolerance = 5
-    try:
-        image_differ.assert_equal(svg1, svg2)
-    finally:
-        image_differ.tolerance = old_tolerance
+    image_differ.assert_equal(svg1, svg2)
 
 
 # noinspection DuplicatedCode
@@ -164,12 +160,7 @@ def test_draw_triangles_gap(image_differ: LiveImageDiffer):
 
     svg1 = LiveSvg(actual.tostring())
     svg2 = LiveSvg(expected.tostring())
-    old_tolerance = image_differ.tolerance
-    image_differ.tolerance = 5
-    try:
-        image_differ.assert_equal(svg1, svg2)
-    finally:
-        image_differ.tolerance = old_tolerance
+    image_differ.assert_equal(svg1, svg2)
 
 
 def test_draw_parallelogram(image_differ: LiveImageDiffer):
@@ -189,6 +180,7 @@ def test_draw_parallelogram(image_differ: LiveImageDiffer):
     image_differ.assert_equal(svg1, svg2)
 
 
+# noinspection DuplicatedCode
 def test_draw_gap(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(103, 97), (200 - 7.24, 97), (103, 7.24)],
@@ -208,12 +200,7 @@ def test_draw_gap(image_differ: LiveImageDiffer):
 
     svg1 = LiveSvg(actual.tostring())
     svg2 = LiveSvg(expected.tostring())
-    old_tolerance = image_differ.tolerance
-    image_differ.tolerance = 5
-    try:
-        image_differ.assert_equal(svg1, svg2)
-    finally:
-        image_differ.tolerance = old_tolerance
+    image_differ.assert_equal(svg1, svg2)
 
 
 def test_draw_parallelogram_gap(image_differ: LiveImageDiffer):
