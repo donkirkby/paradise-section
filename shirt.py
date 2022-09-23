@@ -534,7 +534,7 @@ class TangramRectangle(Tangram):
         self.t1b.rotate(180)
 
 
-def build_drawing(width=1300, height=1500, gap=0):
+def build_drawing(width=1000, height=1200, gap=0):
     drawing = svgwrite.Drawing(size=(width, height))
 
     y = height/2
@@ -619,12 +619,12 @@ def build_drawing(width=1300, height=1500, gap=0):
     return drawing
 
 
-def write_files(front_drawing, svg_filepath):
-    front_svg = front_drawing.tostring()
+def write_files(drawing, svg_filepath):
+    svg_text = drawing.tostring()
     with open(svg_filepath, 'w') as f:
-        f.write(front_svg)
+        f.write(svg_text)
     png_filepath = svg_filepath.with_suffix('.png')
-    rlg = svg2rlg(StringIO(front_svg))
+    rlg = svg2rlg(StringIO(svg_text))
     renderPM.drawToFile(rlg, png_filepath, fmt="PNG")
 
 

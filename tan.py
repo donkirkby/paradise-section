@@ -28,7 +28,8 @@ class Tan:
             flipped_points = [(x0+x, y0-y) for x, y in self.points]
             drawing.add(drawing.polygon(flipped_points,
                                         fill=self.fill,
-                                        stroke=self.fill))
+                                        stroke=self.fill,
+                                        stroke_width=1))
 
     def translate(self, dx, dy):
         self.points = tuple((x+dx, y+dy) for x, y in self.points)
