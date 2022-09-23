@@ -205,7 +205,7 @@ def test_draw_gap(image_differ: LiveImageDiffer):
 
 def test_draw_parallelogram_gap(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
-    expected.add(expected.polygon([(102, 98), (194, 98), (98, 2), (6, 2)],
+    expected.add(expected.polygon([(101, 98), (195, 98), (99, 2), (5, 2)],
                                   fill='black',
                                   stroke='black'))
 

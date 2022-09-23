@@ -32,10 +32,11 @@ class Tangram:
         self.t4b = Tan(copy=self.t4a)
 
         if gap != 0:
-            display = Tan((root2/4-2*gap, 0),
-                          (-gap, root2/4-gap),
+            x_shift = -0.25*gap
+            display = Tan((root2/4-2*gap-2*x_shift, 0),
+                          (-gap-2*x_shift, root2/4-gap),
                           (-root2/4+gap, root2/4-gap))
-            display.translate(gap/2, gap/2)
+            display.translate(gap/2+x_shift, gap/2)
         self.p = Tan((root2/4, 0),
                      (0, root2/4),
                      (-root2/4, root2/4),

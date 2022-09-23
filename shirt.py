@@ -1,4 +1,9 @@
+from io import StringIO
+from pathlib import Path
+
 import svgwrite
+from reportlab.graphics import renderPM
+from svglib.svglib import svg2rlg
 
 from tangram import Tangram
 from tangram_set import TangramSet
@@ -614,22 +619,27 @@ def build_drawing(width=1300, height=1500, gap=0):
     return drawing
 
 
+def write_files(front_drawing, svg_filepath):
+    front_svg = front_drawing.tostring()
+    with open(svg_filepath, 'w') as f:
+        f.write(front_svg)
+    png_filepath = svg_filepath.with_suffix('.png')
+    rlg = svg2rlg(StringIO(front_svg))
+    renderPM.drawToFile(rlg, png_filepath, fmt="PNG")
+
+
 def demo():
     from test_tan import LiveSvg
     width = 700
     height = 800
-    drawing = build_drawing(width, height, gap=0)
+    drawing = build_drawing(width, height, gap=7)
     svg1 = LiveSvg(drawing.tostring())
     svg1.display((-width/2, height/2))
 
 
 def main():
-    front_drawing = build_drawing()
-    with open('front.svg', 'w') as f:
-        f.write(front_drawing.tostring())
-    back_drawing = build_drawing(gap=4)
-    with open('back.svg', 'w') as f:
-        f.write(back_drawing.tostring())
+    write_files(build_drawing(), Path('front.svg'))
+    write_files(build_drawing(gap=7), Path('back.svg'))
 
 
 if __name__ == '__main__':
