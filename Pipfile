@@ -10,6 +10,7 @@ svgwrite = "*"
 pytest = "*"
 space-tracer = "*"
 svglib = "*"
+rlpycairo = "*"
 
 [requires]
 python_version = "3.9"
