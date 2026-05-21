@@ -344,6 +344,10 @@ def build_drawing(width=1000, height=1200, gap=0):
                                 TangramPig(scale, gap))
     tangram_set.align(0, 0, width * 0.35)
     tangram_set.draw(drawing)
+    drawing.add(drawing.text('Happy New Year',
+                             font_size=width/20,
+                             text_anchor='middle',
+                             insert=(width//2, height//2)))
 
     return drawing
 
