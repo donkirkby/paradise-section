@@ -286,11 +286,11 @@
         },
         "space-tracer": {
             "hashes": [
-                "sha256:be9e81ae0ee9e77a387ebd6e429e19a6f51a31b59e5ea84c870941180da4f82f",
-                "sha256:fd938bc13640032c1ded6663bb71c3559340f1e481ffcee8444a5d194ab61581"
+                "sha256:56f59ab64baeb93e7a9142d074ba7b0e5de0699241ee907cb190ab2a46ba60fa",
+                "sha256:ff1ddc6f3b61f19c623b16783bdf638a380a9e3fc36645997b7b7e26ad3e2918"
             ],
             "index": "pypi",
-            "version": "==4.11.0"
+            "version": "==4.13.0"
         },
         "svglib": {
             "hashes": [
@@ -299,6 +299,14 @@
             "index": "pypi",
             "markers": "python_version >= '3.7'",
             "version": "==1.5.1"
+        },
+        "svgwrite": {
+            "hashes": [
+                "sha256:a8fbdfd4443302a6619a7f76bc937fc683daf2628d9b737c891ec08b8ce524c3",
+                "sha256:bb6b2b5450f1edbfa597d924f9ac2dd099e625562e492021d7dd614f65f8a22d"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==1.4.3"
         },
         "tinycss2": {
             "hashes": [
