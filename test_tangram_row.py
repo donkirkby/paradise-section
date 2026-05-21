@@ -2,7 +2,7 @@ import svgwrite
 from space_tracer import LiveImageDiffer
 
 from tangram import Tangram
-from tangram_set import TangramSet
+from tangram_row import TangramRow
 from test_tan import LiveSvg
 
 
@@ -32,7 +32,7 @@ def test_align_gaps(image_differ: LiveImageDiffer):
     actual = svgwrite.Drawing(size=(600, 300))
     tangrams = [create_simple_tangram() for _ in range(3)]
 
-    tangram_set = TangramSet(*tangrams)
+    tangram_set = TangramRow(*tangrams)
     bottom = tangram_set.align(top=50, left=-300, right=100)
 
     tangram_set.draw(actual)
@@ -62,7 +62,7 @@ def test_align_bottoms(image_differ: LiveImageDiffer):
     tangrams = [create_simple_tangram() for _ in range(3)]
     tangrams[1].rotate(45)
 
-    tangram_set = TangramSet(*tangrams)
+    tangram_set = TangramRow(*tangrams)
     tangram_set.align(top=50*Tangram.ROOT2, left=-300, right=100)
 
     tangram_set.draw(actual)
@@ -83,7 +83,7 @@ def test_align_single(image_differ: LiveImageDiffer):
     actual = svgwrite.Drawing(size=(600, 300))
     tangrams = [create_simple_tangram()]
 
-    tangram_set = TangramSet(*tangrams)
+    tangram_set = TangramRow(*tangrams)
     tangram_set.align(top=50, left=-300, right=100)
 
     tangram_set.draw(actual)
@@ -113,7 +113,7 @@ def test_align_spacer(image_differ: LiveImageDiffer):
                 create_simple_tangram(),
                 create_simple_tangram()]
 
-    tangram_set = TangramSet(*tangrams)
+    tangram_set = TangramRow(*tangrams)
     tangram_set.align(top=50, left=-300, right=200)
 
     tangram_set.draw(actual)
@@ -138,7 +138,7 @@ def test_scale(image_differ: LiveImageDiffer):
     actual = svgwrite.Drawing(size=(600, 300))
     tangrams = [create_simple_tangram(), create_simple_tangram()]
 
-    tangram_set = TangramSet(*tangrams)
+    tangram_set = TangramRow(*tangrams)
     tangram_set.align(top=50, left=-150, right=50)
     tangram_set.scale(2)
 

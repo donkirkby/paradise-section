@@ -76,6 +76,10 @@ class Tangram:
         for tan in self.all_tans:
             tan.translate(dx, dy)
 
+    def flip(self):
+        for tan in self.all_tans:
+            tan.flip()
+
     def rotate(self, angle, anchor_point: typing.Tuple[float, float] = None):
         if anchor_point is None:
             anchor_point = self.visible_tans[0].anchor_point
