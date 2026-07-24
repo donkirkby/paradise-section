@@ -1,0 +1,34 @@
+[project]
+name = "paradise-section"
+version = "0.1.0"
+description = "Dissection puzzles, including Tangrams"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "svgwrite==1.4.3 ; python_full_version >= '3.6'",
+]
+
+[dependency-groups]
+dev = [
+    "charset-normalizer==3.4.7 ; python_full_version >= '3.7'",
+    "cssselect2==0.9.0 ; python_full_version >= '3.10'",
+    "exceptiongroup==1.3.1 ; python_full_version >= '3.7'",
+    "freetype-py==2.5.1 ; python_full_version >= '3.7'",
+    "iniconfig==2.3.0 ; python_full_version >= '3.10'",
+    "lxml==6.1.1 ; python_full_version >= '3.8'",
+    "packaging==26.2 ; python_full_version >= '3.8'",
+    "pillow==12.2.0 ; python_full_version >= '3.10'",
+    "pluggy==1.6.0 ; python_full_version >= '3.9'",
+    "pycairo==1.28.0 ; python_full_version >= '3.9'",
+    "pygments==2.20.0 ; python_full_version >= '3.9'",
+    "pytest==9.1.1 ; python_full_version >= '3.10'",
+    "reportlab==5.0.0 ; python_full_version >= '3.9' and python_full_version < '4'",
+    "rlpycairo==0.4.0 ; python_full_version >= '3.7'",
+    "space-tracer==4.13.0",
+    "svglib==2.0.2 ; python_full_version >= '3.9'",
+    "svgwrite==1.4.3 ; python_full_version >= '3.6'",
+    "tinycss2==1.5.1 ; python_full_version >= '3.10'",
+    "tomli==2.4.1 ; python_full_version >= '3.8'",
+    "typing-extensions==4.15.0 ; python_full_version >= '3.9'",
+    "webencodings==0.5.1",
+]
