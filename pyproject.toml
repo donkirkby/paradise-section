@@ -19,7 +19,7 @@ dev = [
     "packaging==26.2 ; python_full_version >= '3.8'",
     "pillow==12.2.0 ; python_full_version >= '3.10'",
     "pluggy==1.6.0 ; python_full_version >= '3.9'",
-    "pycairo==1.28.0 ; python_full_version >= '3.9'",
+    "pycairo==1.29.0 ; python_full_version >= '3.9'",
     "pygments==2.20.0 ; python_full_version >= '3.9'",
     "pytest==9.1.1 ; python_full_version >= '3.10'",
     "reportlab==5.0.0 ; python_full_version >= '3.9' and python_full_version < '4'",
