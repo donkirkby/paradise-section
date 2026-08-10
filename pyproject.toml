@@ -16,7 +16,7 @@ dev = [
     "freetype-py==2.5.1 ; python_full_version >= '3.7'",
     "iniconfig==2.3.0 ; python_full_version >= '3.10'",
     "lxml==6.1.1 ; python_full_version >= '3.8'",
-    "packaging==26.2 ; python_full_version >= '3.8'",
+    "packaging==26.3 ; python_full_version >= '3.8'",
     "pillow==12.3.0 ; python_full_version >= '3.10'",
     "pluggy==1.6.0 ; python_full_version >= '3.9'",
     "pycairo==1.29.0 ; python_full_version >= '3.9'",
