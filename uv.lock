@@ -107,15 +107,15 @@ wheels = [
 
 [[package]]
 name = "cssselect2"
-version = "0.9.0"
+version = "0.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "tinycss2" },
     { name = "webencodings" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/20/92eaa6b0aec7189fa4b75c890640e076e9e793095721db69c5c81142c2e1/cssselect2-0.9.0.tar.gz", hash = "sha256:759aa22c216326356f65e62e791d66160a0f9c91d1424e8d8adc5e74dddfc6fb", size = 35595, upload-time = "2026-02-12T17:16:39.614Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/06/00/2456b6b664c7a770989cbe3c352aac4eb962c938486f03a2e1255ae963c6/cssselect2-0.10.1.tar.gz", hash = "sha256:83b0d820ef589dabaf693289b647c2f5b410f76d285f56deba911ffa75a7b9d1", size = 35653, upload-time = "2026-08-31T21:57:42.59Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/21/0e/8459ca4413e1a21a06c97d134bfaf18adfd27cea068813dc0faae06cbf00/cssselect2-0.9.0-py3-none-any.whl", hash = "sha256:6a99e5f91f9a016a304dd929b0966ca464bcfda15177b6fb4a118fc0fb5d9563", size = 15453, upload-time = "2026-02-12T17:16:38.317Z" },
+    { url = "https://files.pythonhosted.org/packages/bd/59/6b1daa3b94de8970e2a2787ba73616c2d0675d2f948ef4cad8bef7f21bc6/cssselect2-0.10.1-py3-none-any.whl", hash = "sha256:25cc4494d55985d6a6da359be48da6ce98c28dcbafa2314c383ace3fc32ec868", size = 15489, upload-time = "2026-08-31T21:57:41.162Z" },
 ]
 
 [[package]]
@@ -272,7 +272,7 @@ requires-dist = [{ name = "svgwrite", marker = "python_full_version >= '3.6'", s
 [package.metadata.requires-dev]
 dev = [
     { name = "charset-normalizer", marker = "python_full_version >= '3.7'", specifier = "==3.5.1" },
-    { name = "cssselect2", marker = "python_full_version >= '3.10'", specifier = "==0.9.0" },
+    { name = "cssselect2", marker = "python_full_version >= '3.10'", specifier = "==0.10.1" },
     { name = "exceptiongroup", marker = "python_full_version >= '3.7'", specifier = "==1.3.1" },
     { name = "freetype-py", marker = "python_full_version >= '3.7'", specifier = "==2.5.1" },
     { name = "iniconfig", marker = "python_full_version >= '3.10'", specifier = "==2.3.0" },
