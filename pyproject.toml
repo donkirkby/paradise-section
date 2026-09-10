@@ -5,6 +5,12 @@ description = "Dissection puzzles, including Tangrams"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "networkx>=3.6.1",
+    "pytest>=9.1.1",
+    "reportlab>=5.0.0",
+    "rlpycairo>=0.4.0",
+    "space-tracer>=4.13.0",
+    "svglib>=2.2.0",
     "svgwrite==1.4.3 ; python_full_version >= '3.6'",
 ]
 
