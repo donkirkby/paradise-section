@@ -10,6 +10,7 @@ from networkx import Graph
 from svgwrite import Drawing
 
 from tangram import Tangram
+from test_tan import LiveSvg
 
 logger = logging.getLogger(__name__)
 
@@ -111,14 +112,15 @@ class Maze:
         return self.groups[group_name]
 
     def add_chamber(self, x: float, y: float, group_name: str) -> None:
-        min_x = round(x - self.chamber_radius)
-        max_x = round(x + self.chamber_radius)
-        min_y = round(y - self.chamber_radius)
-        max_y = round(y + self.chamber_radius)
-        g = 1.1  # growth factor for radius
+        g = 1.665  # growth factor for radius to inner edge
+        min_x = round(x - self.chamber_radius*g)
+        max_x = round(x + self.chamber_radius*g)
+        min_y = round(y - self.chamber_radius*g)
+        max_y = round(y + self.chamber_radius*g)
         for x2 in range(min_x, max_x+1):
             for y2 in range(min_y, max_y+1):
-                if not math.sqrt((x2-x)**2 + (y2-y)**2) < self.chamber_radius*g:
+                distance = math.sqrt((x2 - x) ** 2 + (y2 - y) ** 2)
+                if self.chamber_radius*g < distance:
                     # (x2, y2) is not inside the chamber.
                     continue
                 self.add_to_group(x2, y2, group_name)
@@ -126,29 +128,26 @@ class Maze:
                     # right neighbour is also inside the chamber.
                     self.graph.add_edge((x2, y2), (x2+1, y2))
                 if math.sqrt((x2-x)**2 + (y2+1-y)**2) < self.chamber_radius*g:
-                    # right neighbour is also inside the chamber.
+                    # lower neighbour is also inside the chamber.
                     self.graph.add_edge((x2, y2), (x2, y2+1))
-        self.graph.add_edge((max_x+1, y-0.5), (max_x, y-0.5))
-        self.graph.add_edge((x-0.5, min_y-1), (x-0.5, min_y))
-        self.graph.add_edge((min_x-1, y+0.5), (min_x, y+0.5))
-        self.graph.add_edge((x+0.5, max_y+1), (x+0.5, max_y))
-        self.add_to_group(max_x+1, round(y-0.5), group_name)
-        self.add_to_group(round(x-0.5), min_y-1, group_name)
-        self.add_to_group(min_x-1, round(y+0.5), group_name)
-        self.add_to_group(round(x+0.5), max_y+1, group_name)
-        r = self.chamber_radius
-        for dx, dy in ((-1.5, -r-1), (0.5, -r-1), (1.5, -r-1),
-                       (-r, -r+1), (r, -r+1),
-                       (-r, 1.5), (r, 1.5),
-                       (-1.5, r), (-0.5, r), (1.5, r)):
-            self.forbid_edge((round(x+dx), round(y+dy)),
-                             (round(x+dx), round(y+dy+1)))
-        for dx, dy in ((-2.5, -r), (1.5, -r),
-                       (-r-1, -1.5), (r, -1.5), (-r-1, -0.5),
-                       (r, 0.5), (-r-1, 1.5), (r, 1.5),
-                       (-2.5, r), (1.5, r)):
-            self.forbid_edge((round(x+dx), round(y+dy)),
-                             (round(x+dx+1), round(y+dy)))
+
+        for x2, y2 in ((x-6, y-1), (x-6, y-2), (x-6, y-3), (x-4, y-5)):
+            self.forbid_edge((round(x2), round(y2)),
+                             (round(x2+1), round(y2)))
+            self.forbid_edge((round(y2), round(x2)),
+                             (round(y2), round(x2+1)))
+            self.forbid_edge((round(2*x-x2), round(y2)),
+                             (round(2*x-x2-1), round(y2)))
+            self.forbid_edge((round(y2), round(2*x-x2)),
+                             (round(y2), round(2*x-x2-1)))
+            self.forbid_edge((round(x2), round(2*y-y2)),
+                             (round(x2+1), round(2*y-y2)))
+            self.forbid_edge((round(2*y-y2), round(x2)),
+                             (round(2*y-y2), round(x2+1)))
+            self.forbid_edge((round(2*x-x2), round(2*y-y2)),
+                             (round(2*x-x2-1), round(2*y-y2)))
+            self.forbid_edge((round(2*y-y2), round(2*x-x2)),
+                             (round(2*y-y2), round(2*x-x2-1)))
 
         self.chambers.append((x, y, group_name))
 
@@ -223,20 +222,35 @@ class Maze:
         for x, y, group_name in self.chambers:
             drawing.add(drawing.text(group_name[0],
                                      x=[round((x+0.5)*scale+self.offset_x)],
-                                     y=[round((y-1.75)*scale+self.offset_y)],
+                                     y=[round((y-2.5)*scale+self.offset_y)],
                                      text_anchor='middle',
                                      font_family='FredokaOne',
-                                     font_size=2*scale))
+                                     font_size=2.5*scale))
+            centre_x = round((x + 0.5) * scale + self.offset_x)
+            centre_y = round((y + 0.5) * scale + self.offset_y)
+            theta = 6
+            draw_arcs((centre_x, centre_y),
+                      round(self.chamber_radius*1.543*scale),
+                      [
+                          theta, 45-theta,
+                          45+theta, 90-theta,
+                          90+theta, 135-theta,
+                          135+theta, 180-theta,
+                          180+theta, 225-theta,
+                          225+theta, 270-theta,
+                          270+theta, 315-theta,
+                          315+theta, 360-theta],
+                      drawing,
+                      fill='none',
+                      **line_style)
             tangram = self.tangrams.get(group_name)
             if tangram is None:
                 continue
-            centre_x = round((x + 0.5) * scale + self.offset_x)
-            centre_y = (y + 0.5) * scale + self.offset_y
             bounds = tangram.bounds
-            tangram.translate(centre_x-drawing['width']//2 -
-                              round(bounds[0]+tangram.width/2),
-                              -centre_y+drawing['height']//2 -
-                              round(bounds[1]+tangram.height/2))
+            tangram.translate(round(centre_x - drawing['width']//2 -
+                                    bounds[0] - tangram.width/2),
+                              round(-centre_y+drawing['height']*0.485 -
+                                    bounds[1]-tangram.height/2))
             tangram.draw(drawing)
 
     def draw_header(self, drawing: Drawing) -> None:
@@ -292,11 +306,14 @@ class Maze:
                     new_group: str,
                     start_group: str,
                     target_group: str|None = None,
-                    retries: int = 0) -> set[tuple[int, int]]:
+                    retries: int = 0) -> list[tuple[int, int]]:
         if target_group is None:
             target_nodes = self.all_groups
         else:
             target_nodes = self.get_group(target_group)
+        if start_group not in self.groups:
+            group_names = sorted(self.groups)
+            raise ValueError(f'No group {start_group!r} in {group_names}.')
         start_nodes = list(self.get_group(start_group))
         good_start_nodes = []
         for node in start_nodes:
@@ -304,7 +321,7 @@ class Maze:
                 good_start_nodes.append(node)
         for retry_count in count():
             location = random.choice(good_start_nodes)
-            steps = {location}
+            steps = [location]
             new_graph = self.graph.copy()
             new_nodes = []
             while True:
@@ -323,7 +340,7 @@ class Maze:
                     steps.clear()
                     break
 
-                steps.add(neighbour)
+                steps.append(neighbour)
                 new_graph.add_edge(location, neighbour)
 
                 if neighbour in target_nodes:
@@ -421,145 +438,194 @@ class Maze:
         self.tangrams[group_name] = tangram
 
 
+def draw_arcs(centre: tuple[float, float],
+              r: float,
+              angles: list[float],
+              drawing: Drawing,
+              **kwargs) -> None:
+    x0, y0 = centre
+    path_steps = []
+    for i, (theta1, theta2) in enumerate(zip(
+            angles,
+            angles[1:])):
+        x1 = x0 + math.cos(theta1 * math.pi / 180) * r
+        y1 = y0 - math.sin(theta1 * math.pi / 180) * r
+        x2 = x0 + math.cos(theta2 * math.pi / 180) * r
+        y2 = y0 - math.sin(theta2 * math.pi / 180) * r
+        if i == 0:
+            path_steps.append(f'M {x1} {y1}')
+
+        if i % 2 == 0:
+            path_steps.append(f'a {r} {r} 0 0 0 {x2-x1} {y2-y1}')
+        else:
+            path_steps.append(f'm {x2-x1} {y2-y1}')
+
+    drawing.add(drawing.path(' '.join(path_steps),
+                             **kwargs))
+
+
 def add_tangrams(maze: Maze):
-    tangram = Tangram(50)
-    tangram.add(tangram.t1a)
-    tangram.add(tangram.t4a)
-    tangram.t4a.rotate(-90)
-    tangram.add(tangram.p)
-    tangram.p.flip()
-    tangram.p.anchor(tangram.t1a, 1, 3)
-    tangram.add(tangram.s)
-    tangram.s.anchor(tangram.p)
-    tangram.add(tangram.t4b)
-    tangram.t4b.rotate(90)
-    tangram.t4b.anchor(tangram.s)
-    tangram.add(tangram.t1b)
-    tangram.t1b.anchor(tangram.s, 3)
+    gap = 0
+    tangram = Tangram(50, gap)
+    maze.add_tangram(tangram, 'T')
     tangram.add(tangram.t2)
     tangram.t2.rotate(-45)
-    tangram.t2.anchor(tangram.t4b, 1)
-    tangram.translate(round(tangram.bounds[0] - tangram.width / 2),
-                      round(tangram.height / 2 - tangram.bounds[3]))
-    maze.add_tangram(tangram, 'T')
-
-    tangram = Tangram(50)
     tangram.add(tangram.t4a)
-    tangram.t4a.rotate(135)
-    tangram.add(tangram.t1a)
-    tangram.t1a.rotate(90)
-    tangram.t1a.anchor(tangram.t4a, 2, 2)
+    tangram.t4a.rotate(-225)
+    tangram.t4a.anchor(tangram.t2, 0, 1)
     tangram.add(tangram.t4b)
-    tangram.t4b.anchor(tangram.t1a, 1, 2)
-    tangram.add(tangram.s)
-    tangram.s.anchor(tangram.t4b, 0, 1)
-    tangram.add(tangram.t2)
-    tangram.t2.rotate(90)
-    tangram.t2.anchor(tangram.s)
-    tangram.add(tangram.t1b)
-    tangram.t1b.rotate(45)
-    tangram.t1b.anchor(tangram.s, 0, 1)
-    tangram.t1b.translate(tangram.width * 0.15, 0)
-    tangram.add(tangram.p)
-    tangram.p.rotate(45)
-    tangram.p.anchor(tangram.t1b, 1, 2)
-    maze.add_tangram(tangram, 'R')
-
-    tangram = Tangram(50)
-    tangram.add(tangram.p)
-    tangram.p.flip()
-    tangram.p.rotate(-45)
-    tangram.add(tangram.t1a)
-    tangram.t1a.rotate(135)
-    tangram.t1a.anchor(tangram.p, 2)
-    tangram.add(tangram.t1b)
-    tangram.t1b.rotate(45)
-    tangram.t1b.anchor(tangram.p, 2, 2)
+    tangram.t4b.rotate(90)
+    tangram.t4b.anchor(tangram.t4a, 2, 0)
     tangram.add(tangram.s)
     tangram.s.rotate(45)
-    tangram.s.anchor(tangram.p, 2, 2)
-    tangram.add(tangram.t4a)
-    tangram.t4a.rotate(-45)
-    tangram.t4a.anchor(tangram.p, 1, 2)
-    tangram.add(tangram.t2)
-    tangram.t2.rotate(135)
-    tangram.t2.anchor(tangram.t1a, 2, 1)
-    tangram.add(tangram.t4b)
-    tangram.t4b.rotate(-135)
-    tangram.t4b.anchor(tangram.t2)
-    maze.add_tangram(tangram, 'A')
+    tangram.s.anchor(tangram.t4a, 0, 2)
+    tangram.add(tangram.t1a)
+    tangram.t1a.rotate(-135)
+    tangram.t1a.anchor(tangram.t4b, 0, 1)
+    tangram.add(tangram.p)
+    tangram.p.rotate(45)
+    tangram.p.anchor(tangram.s, 0, 0)
+    tangram.p.translate(0, -tangram.p.height)
+    tangram.add(tangram.t1b)
+    tangram.t1b.rotate(45)
+    tangram.t1b.anchor(tangram.p, 2, 1)
 
-    tangram = Tangram(50)
+    tangram = Tangram(50, gap)
+    maze.add_tangram(tangram, 'R')
     tangram.add(tangram.t4a)
-    tangram.t4a.rotate(-135)
-    width1 = tangram.width
+    tangram.add(tangram.t4b)
+    tangram.t4b.rotate(180)
+    tangram.t4b.anchor(tangram.t4a, 2, 1)
+    tangram.add(tangram.p)
+    tangram.p.rotate(90)
+    tangram.p.anchor(tangram.t4a, 2, 1)
+    tangram.add(tangram.t1a)
+    tangram.t1a.rotate(90)
+    tangram.t1a.anchor(tangram.p, 2, 1)
     tangram.add(tangram.t2)
-    tangram.t2.rotate(45)
-    tangram.t2.anchor(tangram.t4a, 1, 2)
+    tangram.t2.rotate(-45)
+    tangram.t2.anchor(tangram.p, 3, 0)
+    tangram.add(tangram.t1b)
+    tangram.t1b.anchor(tangram.t2, 0, 2)
+    tangram.add(tangram.s)
+    tangram.s.anchor(tangram.t1b, 0, 3)
+    tangram.flip()
+    tangram.rotate(180)
+
+    tangram = Tangram(50, gap)
+    maze.add_tangram(tangram, 'S')
+    tangram.add(tangram.t4a)
+    tangram.t4a.rotate(-90)
+    tangram.add(tangram.t4b)
+    tangram.t4b.rotate(180)
+    tangram.add(tangram.p)
+    tangram.p.anchor(tangram.t4a, 2, 1)
+    tangram.add(tangram.t2)
+    tangram.t2.rotate(-135)
+    tangram.t2.anchor(tangram.p, 3, 0)
+    tangram.add(tangram.t1a)
+    tangram.t1a.rotate(90)
+    tangram.t1a.anchor(tangram.t2, 1)
+    tangram.add(tangram.t1b)
+    tangram.t1b.rotate(-90)
+    tangram.t1b.anchor(tangram.t2, 0, 2)
+    tangram.add(tangram.s)
+    tangram.s.anchor(tangram.t1b, 0, 0)
+    tangram.s.translate(tangram.s.width/2, 0)
+
+    tangram = Tangram(50, gap)
+    maze.add_tangram(tangram, 'C')
+    tangram.add(tangram.t4a)
+    tangram.t4a.rotate(90)
+    tangram.add(tangram.t4b)
+    tangram.t4b.rotate(90)
+    tangram.t4b.anchor(tangram.t4a, 0, 1)
     tangram.add(tangram.p)
     tangram.p.flip()
-    tangram.p.anchor(tangram.t2, 1)
-    width2 = tangram.width
-    tangram.t2.translate((width1-width2)/2, 0)
-    tangram.p.anchor(tangram.t2, 1)
-    tangram.add(tangram.t4b)
-    tangram.t4b.rotate(-90)
-    tangram.t4b.anchor(tangram.t2)
+    tangram.p.anchor(tangram.t4a, 0, 1)
     tangram.add(tangram.s)
     tangram.s.anchor(tangram.t4b, 0, 2)
     tangram.add(tangram.t1a)
     tangram.t1a.rotate(90)
-    tangram.t1a.anchor(tangram.t4b, 1, 2)
+    tangram.t1a.anchor(tangram.s)
+    tangram.add(tangram.t2)
+    tangram.t2.rotate(-135)
+    tangram.t2.anchor(tangram.s)
     tangram.add(tangram.t1b)
-    tangram.t1b.rotate(90)
-    tangram.t1b.anchor(tangram.t4b, 2, 1)
-    maze.add_tangram(tangram, 'C')
+    tangram.t1b.rotate(180)
+    tangram.t1b.anchor(tangram.s, 1)
+    tangram.rotate(270)
 
-    tangram = Tangram(50)
+    tangram = Tangram(50, gap)
+    maze.add_tangram(tangram, 'E')
     tangram.add(tangram.s)
+    tangram.add(tangram.t1a)
+    tangram.t1a.anchor(tangram.s, 3)
     tangram.add(tangram.p)
     tangram.p.flip()
-    tangram.p.translate(tangram.width*0.25, 0)
+    tangram.p.rotate(-90)
+    tangram.p.anchor(tangram.t1a, 1, 1)
+    tangram.add(tangram.t1b)
+    tangram.t1b.rotate(180)
+    tangram.t1b.anchor(tangram.p, 0, 2)
     tangram.add(tangram.t4a)
-    tangram.t4a.rotate(45)
-    tangram.t4a.anchor(tangram.p, 3, 2)
-    tangram.t4a.translate(tangram.width*-0.1, 0)
+    tangram.t4a.rotate(-135)
+    tangram.t4a.anchor(tangram.t1b, 1, 0)
+    tangram.t4a.translate(0, tangram.t4a.height)
+    tangram.add(tangram.t4b)
+    tangram.t4b.rotate(45)
+    tangram.t4b.anchor(tangram.t4a, 2)
+    tangram.add(tangram.t2)
+    tangram.t2.rotate(90)
+    tangram.t2.anchor(tangram.t4b, 0, 2)
+    tangram.flip()
+    tangram.rotate(180)
+
+    tangram = Tangram(50, gap)
+    maze.add_tangram(tangram, 'A')
+    tangram.add(tangram.t4a)
+    tangram.t4a.rotate(-90)
+    tangram.add(tangram.s)
+    tangram.s.anchor(tangram.t4a, 1, 1)
     tangram.add(tangram.t4b)
     tangram.t4b.rotate(90)
-    tangram.t4b.anchor(tangram.t4a, 0, 2)
-    tangram.add(tangram.t2)
-    tangram.t2.rotate(-90)
-    tangram.t2.anchor(tangram.t4b, 0, 1)
-    tangram.add(tangram.t1a)
-    tangram.t1a.rotate(45)
-    tangram.t1a.anchor(tangram.t4b, 1)
-    tangram.t1a.translate(tangram.width*-0.02, tangram.width*-0.02)
-    tangram.add(tangram.t1b)
-    tangram.t1b.rotate(-135)
-    tangram.t1b.anchor(tangram.t1a, 1, 2)
-    maze.add_tangram(tangram, 'E')
-
-    tangram = Tangram(50)
-    tangram.add(tangram.p)
+    tangram.t4b.anchor(tangram.s)
     tangram.add(tangram.t2)
     tangram.t2.rotate(45)
-    tangram.t2.anchor(tangram.p, 1)
-    h = tangram.height
-    tangram.add(tangram.t4a)
-    tangram.t4a.rotate(45)
-    tangram.t4a.translate(h/2, -tangram.height)
+    tangram.t2.anchor(tangram.t4b, 2)
     tangram.add(tangram.t1a)
-    tangram.t1a.rotate(135)
-    tangram.t1a.anchor(tangram.t4a)
+    tangram.t1a.rotate(-90)
+    tangram.t1a.anchor(tangram.t4b, 1, 2)
+    tangram.add(tangram.p)
+    tangram.p.rotate(45)
+    tangram.p.anchor(tangram.t4b, 1)
     tangram.add(tangram.t1b)
-    tangram.t1b.rotate(-90)
-    tangram.t1b.anchor(tangram.t1a, 2, 2)
-    tangram.add(tangram.t4b)
-    tangram.t4b.rotate(90)
-    tangram.t4b.anchor(tangram.t1b, 1, 2)
-    tangram.add(tangram.s)
-    tangram.s.anchor(tangram.t4b)
-    maze.add_tangram(tangram, 'S')
+    tangram.t1b.rotate(-135)
+    tangram.t1b.anchor(tangram.p, 1)
+
+
+def add_random_walks(maze: Maze, targets: list[tuple[int, int]]) -> str:
+    directions = {(1, 0): 'r', (0, -1): 'u', (-1, 0): 'l', (0, 1): 'd'}
+
+    steps = []
+    for i, target in enumerate(targets):
+        maze.add_to_group(*target, f'target{i}')
+        if i > 0:
+            leg_steps = maze.random_walk(f'leg{i}',
+                                         f'target{i - 1}',
+                                         f'target{i}',
+                                         retries=100)
+            if i > 1:
+                leg_steps.pop(0)
+            steps.extend(leg_steps)
+    step_directions = []
+    for start, end in zip(steps, steps[1:]):
+        x1, y1 = start
+        x2, y2 = end
+        step_direction = directions[(x2-x1, y2-y1)]
+        step_directions.append(step_direction)
+
+    return ''.join(step_directions)
 
 
 def main() -> None:
@@ -567,49 +633,102 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(levelname)s %(message)s')
     logger.info('Starting.')
-    maze = Maze(width=56, height=40)
-    maze.scale = 20
+    maze = Maze(width=77, height=55)
+    maze.scale = 15
     maze.offset_x = 10
-    maze.offset_y = 140
+    maze.offset_y = 100
     group_names = ('TRA', 'CES')
     for y, line in enumerate(group_names):
         for x, group_name in enumerate(line):
-            maze.add_chamber(16*x+11.5, 16*y+11.5, group_name)
-    add_tangrams(maze)
+            maze.add_chamber(22*x+16, 22*y+16, group_name)
     legs = []
     text_legs = {
         # start - R
-        (2, 0): 'ddruurdrrdruurrrrrrdrddlddrdlldrrrdrdrrrrurdrddrd',
+        (2, 0): 'ddrrururddlddrruuuurdrddrdrrruluuurrrdrdrrrrdddrdrurdruurrdrd'
+                 'ddddrrurrrrrddldr',
         # R - E
-        (30, 14): 'rdldrdlldrrrdrrdrdlldlldrddll',
+        (44, 16): 'drdlddldddrddrdldddruurdrdrdllllddllllll',
         # E - C
-        (25, 25): 'lululdldlldlldl',
+        (34, 42): 'llluuluulurrurullllulddlllluulll',
         # C - A
-        (12, 32): 'rdrdrdrururruuluurrdrdrrdrdrurdrrrururudddrrdrdrururrdrruuru'
-                  'lululuuruuluuuruuuuuluruuullurr',
+        (22, 38): 'drdldrdruurrdrdddddrrurrrururdrdddrrrdldrruurururrrruuluuuu'
+                  'rruruluururrrurrulluuruuuuuruuluuuulurrrdrdrr',
         # A - S
-        # (48, 11): 'rrr',
-        (48, 11): 'dddlddrdlddldlldrdrrrrurddrddldldl',
-        # T - S
-        (9, 14): 'ldrdrdllddddddrdlldlddldlddrrdlddrrdrdrurdrrdrrdrurrrurddrurr'
-                 'rulurrdrrrdrrurrddrurrdrrrurrdrrruruulurur',
+        (60, 22): 'rdrrurrrrdldlldrdldrdddrdllddd',
+        # S - T
+        (60, 32): 'luldlllddllldrdrdllldrdrdrddllluldldrddddllllluldldddlluldl'
+                  'llluldlullddlullllluulldluldldllllluuullluulululuulldluurru'
+                  'lluurulurruruluuuluuurrurulluluuruurrr',
         # T - end
-        (7, 12): 'lldldldddrdlldldrrrurdrdldllddlldlddrdrdlldrrdrrdddrrdlddrurd'
-                 'drdrurrurdrdrrrrrurdrrurrdrrrrruurrdldrrurrdrrrrrrrurdrurrrrd'
-                 'rrrrrrr',
+        (10, 16): 'uluruulldlldrddddlddldlldrrrdrdddllllddrrrdrdddluldllllddrdl'
+                  'ldrdrrdldddrdrrdrrdrdddrrdldrddrdrdldrrrrulurrrddrruruurdrur'
+                  'rdrdldrruuurrrrdrdlldrrrrrururrrurrrdlldrrdrurdrruurdruurrdr'
+                  'ddrrurrrrrdrrululluluuruurrrdrrdddddrrrdrrururrurrrdlldrrdrr',
 
         # red herrings
         # E - A
-        (32, 27): 'ruuuruurdrruuruluuluullurrulluuuuurrrrrrurd',
+        (42, 34): 'rruruurrrruuruluuuruluuurululuulurrurdrrrr',
         # E - T
-        (27, 23): 'luluuuulllulluulurruullllldrrddllull',
+        (34, 34): 'llllluluuluululluruuldluuldlluluuruu',
         # T - C
-        (11, 23): 'ruruuuruuuldlu',
+        (16, 22): 'dldldldddrdlldldrrdrurrd',
         # A - end
-        (46, 9): 'rurrdldrrrdllddrdrrdldrrururdddddllddrddrddllldrddrdldrrddlul'
-                 'ldldrddrrdddrdll',
+        (64, 20): 'rdrrruuurdrdrdddluuldldrdddlddrrddldrrdrddrdrdlddrrrddddlldr'
+                  'rdlddrdllldrdrrdddlddl',
         # S - end
-        (46, 30): 'ddlddlddrrurrrrddrrrdd'
+        (60, 44): 'ddrdrrdruurrdrddddruurrrrrddrddd',
+
+        # doorways
+        # T NW
+        (12, 12): 'uuldlllldluuluuldlu',
+        # T N
+        (16, 10): 'lllullldllluuulu',
+        # T NE
+        (20, 12): 'rururrdrrrrdrdrdrdldrr',
+        # T E
+        (22, 16): 'drrurddrurrdrrurrddldldrrrur',
+        # R N
+        (38, 10): 'llluullluldluuuluuuu',
+        # R NE
+        (42, 12): 'urrdrrrdrurdrdrdrruruurr',
+        # R S
+        (38, 22): 'llddllllldrdrurrdldddru',
+        # R SE
+        (42, 20): 'ddlddldrdldrdddllu',
+        # A N
+        (60, 10): 'ululuuullllu',
+        # A NE
+        (64, 12): 'rruulluldlluuruuldlluuur',
+        # A E
+        (66, 16): 'uurururuluururrdrdldrruuurdrruuullldrr',
+        # C NW
+        (12, 34): 'luuluuururuuuuuluu',
+        # C W
+        (10, 38): 'luruu',
+        # C SW
+        (12, 42): 'd',
+        # C S
+        (16, 44): 'drdrurrdlddd',
+        # C SE
+        (20, 42): 'drdrurrddddrur',
+        # E W
+        (32, 38): 'ldrdd',
+        # E S
+        (38, 44): 'llddru',
+        # E SE
+        (42, 42): 'drdllldldlu',
+        # E E
+        (44, 38): 'uuurururrurd',
+        # S E
+        (66, 38): 'uuruuluururuluuuuurul',
+        # S NW
+        (56, 34): 'u',
+        # S W
+        (54, 38): 'd',
+        # S SW
+        (56, 42): 'dddldldddldlldlululdlldlldluld',
+        # S SE
+        (64, 42): 'dddrururuluururrdrdldrruuur',
     }
     for (x, y), leg_text in text_legs.items():
         new_leg = [(x, y)]
@@ -639,14 +758,23 @@ def main() -> None:
             if direction is not None:
                 maze.add_step(node, next_node, 'leg')
 
+    # steps = add_random_walks(maze, [(64, 42), (72, 39)])
+    # print(steps)
+
     maze.fill()
+    add_tangrams(maze)
     image_path = Path(__file__).with_name(
         f'maze.svg')
-    drawing = Drawing(size=(1140, 950))
+    width = 1180
+    height = 950
+    drawing = Drawing(size=(width, height))
     maze.draw(drawing)
-    maze.draw_header(drawing)
-    image_path.write_text(drawing.tostring())
+    # maze.draw_header(drawing)
+    if __name__ == '__live_coding__':
+        LiveSvg(drawing.tostring()).display((-width*0.375, height*0.4))
+    else:
+        image_path.write_text(drawing.tostring())
 
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__live_coding__'):
     main()

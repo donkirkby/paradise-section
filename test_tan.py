@@ -9,6 +9,20 @@ from tan import Tan
 
 
 # noinspection DuplicatedCode
+def test_width():
+    t1 = Tan((100, 10), (20, 50))
+
+    assert t1.width == 100  # implicit start point is (0, 0)
+
+
+# noinspection DuplicatedCode
+def test_height():
+    t1 = Tan((100, 10), (20, 50))
+
+    assert t1.height == 50  # implicit start point is (0, 0)
+
+
+# noinspection DuplicatedCode
 def test_draw(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 100), (200, 100), (100, 0)],

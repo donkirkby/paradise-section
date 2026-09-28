@@ -4,7 +4,7 @@ from textwrap import dedent
 import svgwrite
 from space_tracer import LiveImageDiffer
 
-from maze import Maze
+from maze import Maze, draw_arcs
 from tangram import Tangram
 from test_tan import LiveSvg
 
@@ -44,70 +44,84 @@ def test_display_walls():
 
 
 def test_display_chamber():
-    maze = Maze(width=12, height=12)
-    maze.add_chamber(5.5, 5.5, 'A')
+    maze = Maze(width=16, height=16)
+    maze.add_chamber(7, 7, 'A')
 
     expected_display = dedent("""\
-        +-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | |
-        +-+-+-+-+=+ +=+=+-+-+-+-+
-        | | | | :       : | | | |
-        +-+-+-+-+ + + + +-+-+-+-+
-        | | | |           | | | |
-        +-+-+=+ + + + + + +=+-+-+
-        | | :               : | |
-        +-+-+ + + + + + + + +-+-+
-        | | :                 | |
-        +-+-+ + + + + + + + +-+-+
-        | |                 : | |
-        +-+-+ + + + + + + + +-+-+
-        | | :               : | |
-        +-+-+=+ + + + + + +=+-+-+
-        | | | |           | | | |
-        +-+-+-+-+ + + + +-+-+-+-+
-        | | | | :       : | | | |
-        +-+-+-+-+=+=+ +=+-+-+-+-+
-        | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+""")
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | |
+        +-+-+-+-+=+=+=+ +=+=+=+-+-+-+-+-+
+        | | | | :             : | | | | |
+        +-+-+-+-+ + + + + + + +-+-+-+-+-+
+        | | | |                 | | | | |
+        +-+-+=+ + + + + + + + + +=+-+-+-+
+        | | :                     : | | |
+        +-+-+ + + + + + + + + + + +-+-+-+
+        | | :                     : | | |
+        +-+-+ + + + + + + + + + + +-+-+-+
+        | | :                     : | | |
+        +-+-+ + + + + + + + + + + +-+-+-+
+        | |                         | | |
+        +-+-+ + + + + + + + + + + +-+-+-+
+        | | :                     : | | |
+        +-+-+ + + + + + + + + + + +-+-+-+
+        | | :                     : | | |
+        +-+-+ + + + + + + + + + + +-+-+-+
+        | | :                     : | | |
+        +-+-+=+ + + + + + + + + +=+-+-+-+
+        | | | |                 | | | | |
+        +-+-+-+-+ + + + + + + +-+-+-+-+-+
+        | | | | :             : | | | | |
+        +-+-+-+-+=+=+=+ +=+=+=+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+""")
 
     assert maze.display() == expected_display
 
 
 def test_display_chamber_with_groups():
-    maze = Maze(width=12, height=12)
-    maze.add_chamber(5.5, 5.5, 'A')
+    maze = Maze(width=15, height=15)
+    maze.add_chamber(7, 7, 'A')
     maze.add_to_group(1, 2, 'B')
 
     expected_display = dedent("""\
-        +-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | |A| | | | | | |
-        +-+-+-+-+=+ +=+=+-+-+-+-+
-        | |B| | :A A A A: | | | |
-        +-+-+-+-+ + + + +-+-+-+-+
-        | | | |A A A A A A| | | |
-        +-+-+=+ + + + + + +=+-+-+
-        | | :A A A A A A A A: | |
-        +-+-+ + + + + + + + +-+-+
-        | | :A A A A A A A A A| |
-        +-+-+ + + + + + + + +-+-+
-        | |A A A A A A A A A: | |
-        +-+-+ + + + + + + + +-+-+
-        | | :A A A A A A A A: | |
-        +-+-+=+ + + + + + +=+-+-+
-        | | | |A A A A A A| | | |
-        +-+-+-+-+ + + + +-+-+-+-+
-        | | | | :A A A A: | | | |
-        +-+-+-+-+=+=+ +=+-+-+-+-+
-        | | | | | | |A| | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+""")
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | |A| | | | | | | |
+        +-+-+-+-+=+=+=+ +=+=+=+-+-+-+-+
+        | |B| | :A A A A A A A: | | | |
+        +-+-+-+-+ + + + + + + +-+-+-+-+
+        | | | |A A A A A A A A A| | | |
+        +-+-+=+ + + + + + + + + +=+-+-+
+        | | :A A A A A A A A A A A: | |
+        +-+-+ + + + + + + + + + + +-+-+
+        | | :A A A A A A A A A A A: | |
+        +-+-+ + + + + + + + + + + +-+-+
+        | | :A A A A A A A A A A A: | |
+        +-+-+ + + + + + + + + + + +-+-+
+        | |A A A A A A A A A A A A A| |
+        +-+-+ + + + + + + + + + + +-+-+
+        | | :A A A A A A A A A A A: | |
+        +-+-+ + + + + + + + + + + +-+-+
+        | | :A A A A A A A A A A A: | |
+        +-+-+ + + + + + + + + + + +-+-+
+        | | :A A A A A A A A A A A: | |
+        +-+-+=+ + + + + + + + + +=+-+-+
+        | | | |A A A A A A A A A| | | |
+        +-+-+-+-+ + + + + + + +-+-+-+-+
+        | | | | :A A A A A A A: | | | |
+        +-+-+-+-+=+=+=+ +=+=+=+-+-+-+-+
+        | | | | | | | |A| | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+""")
 
     assert maze.display(show_groups=True) == expected_display
 
@@ -261,41 +275,90 @@ def test_draw_with_path(image_differ: LiveImageDiffer):
     image_differ.assert_equal(svg1, svg2)
 
 
+def test_draw_arcs(image_differ: LiveImageDiffer):
+    expected = svgwrite.Drawing(size=(220, 220))
+    expected.add(expected.path('M 110 110 '
+                               'm 50 0 '
+                               'm -50 -50'
+                               'a 50 50 0 0 0 -50 50 '
+                               'm 50 50 '
+                               'a 50 50 0 0 0 50 -50',
+                               stroke='black',
+                               fill='white',
+                               stroke_width=2))
+
+    actual = svgwrite.Drawing(size=(220, 220))
+    draw_arcs((110, 110),
+              50,
+              [90, 180, 270, 360],
+              actual,
+              stroke='black',
+              stroke_width=2,
+              fill='none')
+
+    svg1 = LiveSvg(actual.tostring())
+    svg2 = LiveSvg(expected.tostring())
+    image_differ.assert_equal(svg1, svg2)
+
+
 def test_draw_with_chamber(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(220, 220))
-    maze1 = Maze(width=10, height=10)
-    maze1.scale = 20
+    maze1 = Maze(width=19, height=19)
+    maze1.scale = 10
     maze1.offset_x = maze1.offset_y = 10
-    for x, y in ((3, 1), (4, 1), (5, 1),
-                 (2, 2), (3, 2), (4, 2), (5, 2), (6, 2),
-                 (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3),
-                 (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4),
-                 (0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5),
-                 (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6),
-                 (2, 7), (3, 7), (4, 7), (5, 7), (6, 7),
-                 (3, 8), (4, 8), (5, 8)):
+    for x, y in ((6, 4), (7, 4), (8, 4), (9, 4), (10, 4), (11, 4),
+                 (5, 5), (6, 5), (7, 5), (8, 5), (9, 5), (10, 5), (11, 5), (12, 5),
+                 (6, 6), (7, 6), (8, 6), (9, 6), (10, 6), (11, 6), (12, 6), (13, 6),
+                 (7, 7), (8, 7), (9, 7), (10, 7), (11, 7), (12, 7), (13, 7),
+                 (8, 8), (9, 8), (10, 8), (11, 8), (12, 8), (13, 8),
+                 (9, 9), (10, 9), (11, 9), (12, 9), (13, 9), (14, 9),
+                 (10, 10), (11, 10), (12, 10), (13, 10),
+                 (11, 11), (12, 11), (13, 11),
+                 (12, 12), (13, 12)):
         maze1.graph.add_edge((x, y), (x+1, y))
-    for x, y in ((4, 0), (3, 1), (4, 1), (5, 1), (6, 1),
-                 (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2),
-                 (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3),
-                 (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4),
-                 (1, 5), (2, 5), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5), (8, 5),
-                 (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6),
-                 (3, 7), (4, 7), (5, 7), (6, 7), (5, 8)):
+        maze1.graph.add_edge((y, x), (y, x+1))
+    for x, y in ((9, 3),
+                 (6, 4), (7, 4), (8, 4), (9, 4), (10, 4), (11, 4), (12, 4),
+                 (6, 5), (7, 5), (8, 5), (9, 5), (10, 5), (11, 5), (12, 5), (13, 5),
+                 (7, 6), (8, 6), (9, 6), (10, 6), (11, 6), (12, 6), (13, 6), (14, 6),
+                 (8, 7), (9, 7), (10, 7), (11, 7), (12, 7), (13, 7), (14, 7),
+                 (9, 8), (10, 8), (11, 8), (12, 8), (13, 8), (14, 8),
+                 (10, 9), (11, 9), (12, 9), (13, 9), (14, 9),
+                 (11, 10), (12, 10), (13, 10), (14, 10),
+                 (12, 11), (13, 11), (14, 11),
+                 (13, 12)):
         maze1.graph.add_edge((x, y), (x, y+1))
+        maze1.graph.add_edge((y, x), (y+1, x))
     maze1.draw(expected)
-    expected.add(expected.text('A',x=[110],
-                               y=[65],
+    r = 56
+    theta = 6
+    draw_arcs((105, 105),
+              r,
+              [theta, 45-theta,
+               45+theta, 90-theta,
+               90+theta, 135-theta,
+               135+theta, 180-theta,
+               180+theta, 225-theta,
+               225+theta, 270-theta,
+               270+theta, 315-theta,
+               315+theta, 360-theta],
+              expected,
+              fill='none',
+              stroke='black',
+              stroke_width=2,
+              stroke_linecap='round')
+    expected.add(expected.text('A',x=[105],
+                               y=[75],
                                text_anchor='middle',
                                font_family='FredokaOne',
-                               font_size=40))
+                               font_size=25))
 
     actual = svgwrite.Drawing(size=(220, 220))
 
-    maze = Maze(width=10, height=10)
+    maze = Maze(width=19, height=19)
     maze.offset_x = maze.offset_y = 10
-    maze.scale = 20
-    maze.add_chamber(4.5, 4.5, 'A')
+    maze.scale = 10
+    maze.add_chamber(9, 9, 'A')
     maze.draw(actual)
 
     svg1 = LiveSvg(actual.tostring())
@@ -305,12 +368,12 @@ def test_draw_with_chamber(image_differ: LiveImageDiffer):
 
 def test_draw_with_tangram(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(220, 220))
-    maze1 = Maze(width=10, height=10)
-    maze1.scale = 20
-    maze1.offset_x = maze1.offset_y = 10
-    maze1.add_chamber(4.5, 4.5, 'A')
+    maze1 = Maze(width=17, height=17)
+    maze1.scale = 12
+    maze1.offset_x = maze1.offset_y = 5
+    maze1.add_chamber(8, 10, 'A')
     maze1.draw(expected)
-    tangram = Tangram(50)
+    tangram = Tangram(35)
     tangram.add(tangram.t1a)
     tangram.add(tangram.t4a)
     tangram.t4a.rotate(-90)
@@ -327,8 +390,8 @@ def test_draw_with_tangram(image_differ: LiveImageDiffer):
     tangram.add(tangram.t2)
     tangram.t2.rotate(-45)
     tangram.t2.anchor(tangram.t4b, 1)
-    tangram.translate(round(tangram.bounds[0] - tangram.width / 2),
-                      round(tangram.height / 2 - tangram.bounds[3]))
+    tangram.translate(round(tangram.bounds[0] - tangram.width / 2 - 3),
+                      round(tangram.height / 2 - tangram.bounds[3] - 25))
 
     tangram.draw(expected)
 
@@ -336,10 +399,10 @@ def test_draw_with_tangram(image_differ: LiveImageDiffer):
 
     actual = svgwrite.Drawing(size=(220, 220))
 
-    maze = Maze(width=10, height=10)
-    maze.offset_x = maze.offset_y = 10
-    maze.scale = 20
-    maze.add_chamber(4.5, 4.5, 'A')
+    maze = Maze(width=17, height=17)
+    maze.offset_x = maze.offset_y = 5
+    maze.scale = 12
+    maze.add_chamber(8, 10, 'A')
     maze.add_tangram(tangram, 'A')
     maze.draw(actual)
 
@@ -455,7 +518,7 @@ def test_random_walk(monkeypatch):
         | | | | | |
         +-+-+-+-+-+""")
 
-    assert steps == {(2, 1), (3, 1), (4, 1), (4, 0), (3, 0), (2, 0)}
+    assert steps == [(2, 1), (3, 1), (4, 1), (4, 0), (3, 0), (2, 0)]
     assert maze.display(show_groups=True) == expected_display
 
 
@@ -478,7 +541,7 @@ def test_random_walk_with_forbidden_edges(monkeypatch):
         | | | | | |
         +-+-+-+-+-+""")
 
-    assert steps == {(2, 1), (3, 1), (3, 2)}
+    assert steps == [(2, 1), (3, 1), (3, 2)]
     assert maze.display() == expected_display
 
 
@@ -525,7 +588,7 @@ def test_random_walk_hits_other_group(monkeypatch):
         | | | | | |
         +-+-+-+-+-+""")
 
-    assert steps == {(0, 1), (1, 1), (1, 0), (2, 0), (3, 0), (4, 0), (4, 1)}
+    assert steps == [(0, 1), (1, 1), (1, 0), (2, 0), (3, 0), (4, 0), (4, 1)]
     assert maze.display(show_groups=True) == expected_display
 
 
@@ -599,37 +662,45 @@ def test_fill(monkeypatch):
 def test_random_walk_between_chambers(monkeypatch):
     monkeypatch.setattr('random.choice', first_choice)
 
-    maze = Maze(width=30, height=12)
-    maze.add_chamber(5.5, 5.5, 'start')
-    maze.add_chamber(20.5, 5.5, 'target')
+    maze = Maze(width=34, height=16)
+    maze.add_chamber(7, 7, 'start')
+    maze.add_chamber(22, 7, 'target')
     maze.random_walk('new', 'start', 'target')
 
     expected_display = dedent("""\
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | |                               | | | | | | | | | |
-        +-+-+-+-+=+ +=+=+-+-+-+-+-+-+-+-+-+-+-+=+ +=+=+-+-+-+-+-+-+-+
-        | | | | :       : | | | | | | | | | | :       : | | | | | | |
-        +-+-+-+-+ + + + +-+-+-+-+-+-+-+-+-+-+-+ + + + +-+-+-+-+-+-+-+
-        | | | |           | | | | | | | | | |           | | | | | | |
-        +-+-+=+ + + + + + +=+-+-+-+-+-+-+-+=+ + + + + + +=+-+-+-+-+-+
-        | | :               : | | | | | | :               : | | | | |
-        +-+-+ + + + + + + + +-+-+-+-+-+-+-+ + + + + + + + +-+-+-+-+-+
-        | | :                 | | | | | | :                 | | | | |
-        +-+-+ + + + + + + + +-+-+-+-+-+-+-+ + + + + + + + +-+-+-+-+-+
-        | |                 : | | | | | |                 : | | | | |
-        +-+-+ + + + + + + + +-+-+-+-+-+-+-+ + + + + + + + +-+-+-+-+-+
-        | | :               : | | | | | | :               : | | | | |
-        +-+-+=+ + + + + + +=+-+-+-+-+-+-+-+=+ + + + + + +=+-+-+-+-+-+
-        | | | |           | | | | | | | | | |           | | | | | | |
-        +-+-+-+-+ + + + +-+-+-+-+-+-+-+-+-+-+-+ + + + +-+-+-+-+-+-+-+
-        | | | | :       : | | | | | | | | | | :       : | | | | | | |
-        +-+-+-+-+=+=+ +=+-+-+-+-+-+-+-+-+-+-+-+=+=+ +=+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+""")
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | |                               | | | | | | | | | | | |
+        +-+-+-+-+=+=+=+ +=+=+=+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+
+        | | | | :             : | | | | | | | :             : | | | | | | | |
+        +-+-+-+-+ + + + + + + +-+-+-+-+-+-+-+-+ + + + + + + +-+-+-+-+-+-+-+-+
+        | | | |                 | | | | | | |                 | | | | | | | |
+        +-+-+=+ + + + + + + + + +=+-+-+-+-+-+ + + + + + + + + +-+-+-+-+-+-+-+
+        | | :                     : | | | :                     : | | | | | |
+        +-+-+ + + + + + + + + + + +-+-+-+-+ + + + + + + + + + + +-+-+-+-+-+-+
+        | | :                     : | | | :                     : | | | | | |
+        +-+-+ + + + + + + + + + + +-+-+-+-+ + + + + + + + + + + +-+-+-+-+-+-+
+        | | :                     : | | | :                     : | | | | | |
+        +-+-+ + + + + + + + + + + +-+-+-+-+ + + + + + + + + + + +-+-+-+-+-+-+
+        | |                         | | |                         | | | | | |
+        +-+-+ + + + + + + + + + + +-+-+-+-+ + + + + + + + + + + +-+-+-+-+-+-+
+        | | :                     : | | | :                     : | | | | | |
+        +-+-+ + + + + + + + + + + +-+-+-+-+ + + + + + + + + + + +-+-+-+-+-+-+
+        | | :                     : | | | :                     : | | | | | |
+        +-+-+ + + + + + + + + + + +-+-+-+-+ + + + + + + + + + + +-+-+-+-+-+-+
+        | | :                     : | | | :                     : | | | | | |
+        +-+-+=+ + + + + + + + + +=+-+-+-+-+-+ + + + + + + + + +-+-+-+-+-+-+-+
+        | | | |                 | | | | | | |                 | | | | | | | |
+        +-+-+-+-+ + + + + + + +-+-+-+-+-+-+-+-+ + + + + + + +-+-+-+-+-+-+-+-+
+        | | | | :             : | | | | | | | :             : | | | | | | | |
+        +-+-+-+-+=+=+=+ +=+=+=+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+""")
 
     assert maze.display() == expected_display
 

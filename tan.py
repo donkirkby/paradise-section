@@ -18,6 +18,16 @@ class Tan:
         self.anchor_point = (0, 0)
         self.fill = 'black'
 
+    @property
+    def width(self):
+        xs = [point[0] for point in self.points]
+        return max(xs) - min(xs)
+
+    @property
+    def height(self):
+        ys = [point[1] for point in self.points]
+        return max(ys) - min(ys)
+
     def draw(self, drawing):
         if self.display is not None:
             self.display.fill = self.fill
