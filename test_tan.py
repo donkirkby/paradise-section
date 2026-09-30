@@ -26,8 +26,7 @@ def test_height():
 def test_draw(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 100), (200, 100), (100, 0)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -42,8 +41,7 @@ def test_draw(image_differ: LiveImageDiffer):
 def test_translate(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(50, 0), (150, 100), (50, 100)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -59,8 +57,7 @@ def test_translate(image_differ: LiveImageDiffer):
 def test_rotate(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(0, 100), (100, 100), (100, 0)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -76,8 +73,7 @@ def test_rotate(image_differ: LiveImageDiffer):
 def test_rotate_anchor_point(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 200), (200, 200), (200, 100)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -93,8 +89,7 @@ def test_rotate_anchor_point(image_differ: LiveImageDiffer):
 def test_scale(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 100), (150, 100), (100, 50)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -110,8 +105,7 @@ def test_scale(image_differ: LiveImageDiffer):
 def test_flip(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 100), (200, 100), (100, 200), (0, 200)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -128,8 +122,7 @@ def test_flip(image_differ: LiveImageDiffer):
 def test_copy(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 100), (200, 100), (100, 0)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -145,8 +138,7 @@ def test_copy(image_differ: LiveImageDiffer):
 def test_display(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(4, 103), (47, 103), (47, 146)],
-                                  fill='black',
-                                  stroke='black'))
+                                  fill='black'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 
@@ -187,8 +179,7 @@ class LiveSvg(LiveImage):
 def test_fill(image_differ: LiveImageDiffer):
     expected = svgwrite.Drawing(size=(200, 200))
     expected.add(expected.polygon([(100, 100), (200, 100), (100, 0)],
-                                  fill='blue',
-                                  stroke='blue'))
+                                  fill='blue'))
 
     actual = svgwrite.Drawing(size=(200, 200))
 

@@ -3,7 +3,10 @@ import typing
 
 
 class Tan:
-    def __init__(self, *points, copy: 'Tan' = None, display: 'Tan' = None):
+    def __init__(self,
+                 *points,
+                 copy: Tan | None = None,
+                 display: Tan | None = None):
         if copy is not None:
             self.points = copy.points
             if copy.display is None:
@@ -29,24 +32,26 @@ class Tan:
         return max(ys) - min(ys)
 
     def draw(self, drawing):
+        flipped_points = self.create_polygon(drawing)
+        drawing.add(drawing.polygon(flipped_points, fill=self.fill))
+
+    def create_polygon(self, drawing):
         if self.display is not None:
-            self.display.fill = self.fill
-            self.display.draw(drawing)
-        else:
-            x0 = drawing['width']//2
-            y0 = drawing['height']//2
-            flipped_points = [(x0+x, y0-y) for x, y in self.points]
-            drawing.add(drawing.polygon(flipped_points,
-                                        fill=self.fill,
-                                        stroke=self.fill,
-                                        stroke_width=1))
+            return self.display.create_polygon(drawing)
+
+        x0 = drawing['width']//2
+        y0 = drawing['height']//2
+        flipped_points = [(x0+x, y0-y) for x, y in self.points]
+        return flipped_points
 
     def translate(self, dx, dy):
         self.points = tuple((x+dx, y+dy) for x, y in self.points)
         if self.display:
             self.display.translate(dx, dy)
 
-    def rotate(self, angle, anchor_point: typing.Tuple[float, float] = None):
+    def rotate(self,
+               angle,
+               anchor_point: None | typing.Tuple[float, float] = None):
         """ Rotate the tan through an angle, centred on (cx, cy).
 
         :param angle: in degrees, not radians
