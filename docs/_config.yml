@@ -1,0 +1,14 @@
+remote_theme: chrisrhymes/bulma-clean-theme@v0.14.0
+title: Tangram Maze
+google_analytics: UA-4644630-2
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: page
+      hero_image: images/index_hero.jpg
+      hero_darken: true
+      twitter:
+        card: summary_large_image
+      image: images/index_hero.jpg
