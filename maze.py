@@ -437,6 +437,44 @@ class Maze:
     def add_tangram(self, tangram: Tangram, group_name: str) -> None:
         self.tangrams[group_name] = tangram
 
+    def link_random_walks(self, targets: list[tuple[int, int]]) -> str:
+        directions = {(1, 0): 'r', (0, -1): 'u', (-1, 0): 'l', (0, 1): 'd'}
+
+        steps = []
+        for i, target in enumerate(targets):
+            self.add_to_group(*target, f'target{i}')
+            if i > 0:
+                leg_steps = self.random_walk(f'leg{i}',
+                                             f'target{i - 1}',
+                                             f'target{i}',
+                                          retries=100)
+                if i > 1 and leg_steps:
+                    leg_steps.pop(0)
+                steps.extend(leg_steps)
+        step_directions = []
+        for start, end in zip(steps, steps[1:]):
+            x1, y1 = start
+            x2, y2 = end
+            step_direction = directions[(x2-x1, y2-y1)]
+            step_directions.append(step_direction)
+
+        return ''.join(step_directions)
+
+    def add_path(self, start: tuple[int, int], step_directions: str):
+        (x, y) = node = start
+        for heading in step_directions:
+            if heading == 'l':
+                x -= 1
+            elif heading == 'r':
+                x += 1
+            elif heading == 'u':
+                y -= 1
+            elif heading == 'd':
+                y += 1
+            next_node = (x, y)
+            self.add_step(node, next_node, 'leg')
+            node = next_node
+
 
 def draw_arcs(centre: tuple[float, float],
               r: float,
@@ -604,30 +642,6 @@ def add_tangrams(maze: Maze):
     tangram.t1b.anchor(tangram.p, 1)
 
 
-def add_random_walks(maze: Maze, targets: list[tuple[int, int]]) -> str:
-    directions = {(1, 0): 'r', (0, -1): 'u', (-1, 0): 'l', (0, 1): 'd'}
-
-    steps = []
-    for i, target in enumerate(targets):
-        maze.add_to_group(*target, f'target{i}')
-        if i > 0:
-            leg_steps = maze.random_walk(f'leg{i}',
-                                         f'target{i - 1}',
-                                         f'target{i}',
-                                         retries=100)
-            if i > 1:
-                leg_steps.pop(0)
-            steps.extend(leg_steps)
-    step_directions = []
-    for start, end in zip(steps, steps[1:]):
-        x1, y1 = start
-        x2, y2 = end
-        step_direction = directions[(x2-x1, y2-y1)]
-        step_directions.append(step_direction)
-
-    return ''.join(step_directions)
-
-
 def main() -> None:
     random.seed(0)
     logging.basicConfig(level=logging.INFO,
@@ -641,7 +655,6 @@ def main() -> None:
     for y, line in enumerate(group_names):
         for x, group_name in enumerate(line):
             maze.add_chamber(22*x+16, 22*y+16, group_name)
-    legs = []
     text_legs = {
         # start - R
         (2, 0): 'ddrrururddlddrruuuurdrddrdrrruluuurrrdrdrrrrdddrdrurdruurrdrd'
@@ -730,36 +743,13 @@ def main() -> None:
         # S SE
         (64, 42): 'dddrururuluururrdrdldrruuur',
     }
-    for (x, y), leg_text in text_legs.items():
-        new_leg = [(x, y)]
-        legs.append(new_leg)
-        for heading in leg_text:
-            if heading == 'l':
-                x -= 1
-            elif heading == 'r':
-                x += 1
-            elif heading == 'u':
-                y -= 1
-            elif heading == 'd':
-                y += 1
-            new_leg.append((x, y))
-            # print(f'({x}, {y}), ', end='')
-    neighbour_diffs = {(0, 1): 'd',
-                       (0, -1): 'u',
-                       (1, 0): 'r',
-                       (-1, 0): 'l'}
-    for leg in legs:
-        print()
-        for node, next_node in zip(leg, leg[1:]):
+    for start, leg_text in text_legs.items():
+        maze.add_path(start, leg_text)
 
-            dx = next_node[0] - node[0]
-            dy = next_node[1] - node[1]
-            direction = neighbour_diffs.get((dx, dy))
-            if direction is not None:
-                maze.add_step(node, next_node, 'leg')
-
-    # steps = add_random_walks(maze, [(64, 42), (72, 39)])
-    # print(steps)
+    # try:
+    #     logger.info(maze.link_random_walks([(58, 58), (64, 58)]))
+    # except IndexError:
+    #     logger.error('Dead end in random walk.')
 
     maze.fill()
     add_tangrams(maze)
